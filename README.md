@@ -3,6 +3,12 @@ Dette repoet vil inneholde koden som vi har gått igjennom i forelesninger. I ti
 
 Anbefaler alle å prøve å bruke `git` da dette er industristandard for versjonshåndtering, og noe dere <b>GARANTERT</b> kommer til å måtte bruke senere på studiet, og karriæren.
 
+Som alltid, husk å kjøre
+```bash
+npm install
+```
+Etter at dere har forket, klonet eller pullet.
+
 ## Hvordan bruke repoet? 
 Det beste er å forke repoet så du får en kopi av det på din egen Github profil. Derfra kan du senere hente ny kode hver gang dette endres fra dette repoet ved å sette en ny upstream branch som refererer dette repoet:
 Fork dette repoet og klon det til et passende sted på maskinen din, deretter kjører du:<br>

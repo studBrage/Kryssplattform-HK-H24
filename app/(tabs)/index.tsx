@@ -1,25 +1,18 @@
 import {
-  Image,
   StyleSheet,
-  Platform,
   View,
   Text,
   Pressable,
   FlatList,
   Modal,
-  TextInput,
 } from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { useEffect, useState } from "react";
-import { Link, Stack } from "expo-router";
-import { getData, getItemWithSetter, storeData } from "@/utils/local_storage";
+import { Stack } from "expo-router";
+import { getItemWithSetter, storeData } from "@/utils/local_storage";
 import PostForm from "@/components/PostForm";
 import UpsertUser from "@/components/UpsertUser";
-import { getAllPosts } from "@/utils/dummyPostData";
+import { addNewPost, getAllPosts } from "@/utils/dummyPostData";
 import { PostData } from "@/utils/postData";
 import Post from "@/components/Post";
 import Spacer from "@/components/Spacer";
@@ -69,7 +62,9 @@ export default function Index() {
       <Modal visible={isModalOpen} animationType="slide">
         <PostForm
           addNewPost={(post) => {
-            setPosts([...posts, post]);
+            setPosts([post, ...posts]);
+            // Legger innlegget til i globalPosts lista
+            addNewPost(post);
             setIsModalOpen(false);
           }}
           closeModal={() => setIsModalOpen(false)}
@@ -84,7 +79,7 @@ export default function Index() {
         ListHeaderComponent={() => <Spacer height={10} />}
         ListFooterComponent={() => <Spacer height={50} />}
         ItemSeparatorComponent={() => <Spacer height={8} />}
-        renderItem={(post) => <Post postData={post.item} />}
+        renderItem={(post) => <Post key={post.index} postData={post.item} />}
       />
     </View>
   );

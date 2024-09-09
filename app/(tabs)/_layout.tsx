@@ -10,6 +10,7 @@ const TabsLayout = () => {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
+            // Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken!
             <AntDesign name="home" size={24} color={color} />
           ),
           headerTitle(props) {
@@ -32,6 +33,7 @@ const TabsLayout = () => {
         options={{
           title: "Profil",
           tabBarIcon: ({ color, focused }) => (
+            // Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken!
             <AntDesign name="user" size={24} color={color} />
           ),
           headerTitle(props) {

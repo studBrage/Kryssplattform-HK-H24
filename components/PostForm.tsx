@@ -50,7 +50,9 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
               addNewPost({
                 title: titleText,
                 description: descriptionText,
-                id: "id",
+                // midler for å generere en ikke fullt så unik id, hvis to poster har samme tittel vil det dukke opp en warning om children with the same key
+                // Dette løser seg selv når vi kan få unike IDer fra en backend
+                id: `postName-${titleText}`,
                 hashtags: hashtagText,
                 author: "Kul student",
               });

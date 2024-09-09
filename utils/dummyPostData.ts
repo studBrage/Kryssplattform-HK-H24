@@ -14,6 +14,10 @@ export const getPostById = (id: string) => {
     return globalPosts.find((post) => post.id === id);
 }
 
+export const addNewPost = (post: PostData) => {
+    globalPosts.unshift(post);
+}
+
 export const getAllPosts = () => {
     return globalPosts;
 }
