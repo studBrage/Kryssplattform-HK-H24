@@ -1,60 +1,109 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Platform,
+  View,
+  Text,
+  Pressable,
+  FlatList,
+  Modal,
+  TextInput,
+} from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { HelloWave } from "@/components/HelloWave";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { useEffect, useState } from "react";
+import { Link, Stack } from "expo-router";
+import { getData, getItemWithSetter, storeData } from "@/utils/local_storage";
+import PostForm from "@/components/PostForm";
+import UpsertUser from "@/components/UpsertUser";
+import { getAllPosts } from "@/utils/dummyPostData";
+import { PostData } from "@/utils/postData";
+import Post from "@/components/Post";
+import Spacer from "@/components/Spacer";
 
-export default function HomeScreen() {
+export default function Index() {
+  const [posts, setPosts] = useState<PostData[]>(getAllPosts());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpsertUserModalOpen, setIsUpsertUserModalOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    getItemWithSetter("user", setUserName);
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View style={styles.titleContainer}>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              style={{ paddingRight: 6 }}
+              onPress={() => setIsModalOpen(true)}
+            >
+              <Text>Nytt innlegg</Text>
+            </Pressable>
+          ),
+          headerLeft: () => (
+            <Pressable
+              style={{ paddingLeft: 6 }}
+              onPress={() => setIsUpsertUserModalOpen(true)}
+            >
+              <Text>{userName ? userName : "Profil"}</Text>
+            </Pressable>
+          ),
+        }}
+      />
+      <Modal visible={isUpsertUserModalOpen} animationType="slide">
+        <UpsertUser
+          closeModal={() => setIsUpsertUserModalOpen(false)}
+          createUserName={(name) => {
+            setUserName(name);
+            storeData("user", name);
+            setIsUpsertUserModalOpen(false);
+          }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </Modal>
+      <Modal visible={isModalOpen} animationType="slide">
+        <PostForm
+          addNewPost={(post) => {
+            setPosts([...posts, post]);
+            setIsModalOpen(false);
+          }}
+          closeModal={() => setIsModalOpen(false)}
+        />
+      </Modal>
+      <FlatList
+        style={{
+          width: "100%",
+          paddingHorizontal: 20,
+        }}
+        data={posts}
+        ListHeaderComponent={() => <Spacer height={10} />}
+        ListFooterComponent={() => <Spacer height={50} />}
+        ItemSeparatorComponent={() => <Spacer height={8} />}
+        renderItem={(post) => <Post postData={post.item} />}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  textFieldContainer: {
+    width: "100%",
+    flexDirection: "column",
+    gap: 10,
+    paddingHorizontal: 20,
+  },
+  textfield: {
+    borderWidth: 1,
   },
   stepContainer: {
     gap: 8,
@@ -65,6 +114,6 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
 });

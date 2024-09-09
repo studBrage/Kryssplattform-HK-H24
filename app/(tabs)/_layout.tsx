@@ -1,37 +1,56 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from "expo-router";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { Text } from "react-native";
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const TabsLayout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
+    <Tabs>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <AntDesign name="home" size={24} color={color} />
           ),
+          headerTitle(props) {
+            return (
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                Hjemmeside
+              </Text>
+            );
+          },
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="profilePage"
         options={{
-          title: 'Explore',
+          title: "Profil",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <AntDesign name="user" size={24} color={color} />
           ),
+          headerTitle(props) {
+            return (
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                Profilside
+              </Text>
+            );
+          },
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;
