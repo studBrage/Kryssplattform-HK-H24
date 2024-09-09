@@ -52,7 +52,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                 description: descriptionText,
                 id: "id",
                 hashtags: hashtagText,
-                author: "Anonym",
+                author: "Kul student",
               });
               setTitleText("");
               setDescriptionText("");
