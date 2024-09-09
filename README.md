@@ -1,50 +1,31 @@
-# Welcome to your Expo app 👋
+# Kryssplattform2024
+Dette repoet vil inneholde koden som vi har gått igjennom i forelesninger. I tillegg, så vil løsninger på oppgaver, og ymse annet relatert stoff dukke opp. 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Anbefaler alle å prøve å bruke `git` da dette er industristandard for versjonshåndtering, og noe dere <b>GARANTERT</b> kommer til å måtte bruke senere på studiet, og karriæren.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Hvordan bruke repoet? 
+Det beste er å forke repoet så du får en kopi av det på din egen Github profil. Derfra kan du senere hente ny kode hver gang dette endres fra dette repoet ved å sette en ny upstream branch som refererer dette repoet:
+I ditt forked repo kjør:<br>
 ```bash
-npm run reset-project
+git remote add upstream https://github.com/studBrage/Kryssplattform-HK-H24.git
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+For å hente nye endringer kan du kjøre:<br>
+```bash
+git fetch upstream
+```
 
-## Learn more
+Nå kan du merge `main` branchen i dette repoet med branchen du bruker i ditt repo mde disse kommandoene:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+git checkout <din branch>
+git merge upstream/main
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+#### Voila! Du kan nå pulle kode inn i din egen fork når dette repoet endres
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Bare klone
+Dersom du kun er ute etter å få de nyeste endringene uten å lage et eget repo med fork, så kan du klone repoet ved å kjøre denne kommandoen
+```bash
+git clone https://github.com/studBrage/Kryssplattform-HK-H24.git
+```
