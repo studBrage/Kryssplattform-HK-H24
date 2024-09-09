@@ -5,17 +5,17 @@ Anbefaler alle å prøve å bruke `git` da dette er industristandard for versjon
 
 ## Hvordan bruke repoet? 
 Det beste er å forke repoet så du får en kopi av det på din egen Github profil. Derfra kan du senere hente ny kode hver gang dette endres fra dette repoet ved å sette en ny upstream branch som refererer dette repoet:
-I ditt forked repo kjør:<br>
+Fork dette repoet og klon det til et passende sted på maskinen din, deretter kjører du:<br>
 ```bash
 git remote add upstream https://github.com/studBrage/Kryssplattform-HK-H24.git
 ```
 
-For å hente nye endringer kan du kjøre:<br>
+Hver gang ud ønsker å hente nye endringer kjører du:<br>
 ```bash
 git fetch upstream
 ```
 
-Nå kan du merge `main` branchen i dette repoet med branchen du bruker i ditt repo mde disse kommandoene:
+Nå kan du merge `main` branchen i dette repoet med branchen du bruker i ditt repo med disse kommandoene:
 
 ```bash
 git checkout <din branch>
