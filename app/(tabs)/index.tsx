@@ -9,22 +9,30 @@ import {
 
 import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
-import { getItemWithSetter, storeData } from "@/utils/local_storage";
+import { getData, getItemWithSetter, storeData } from "@/utils/local_storage";
 import PostForm from "@/components/PostForm";
 import UpsertUser from "@/components/UpsertUser";
-import { addNewPost, getAllPosts } from "@/utils/dummyPostData";
+import { addNewPost, getAllPosts, toggleLike } from "@/utils/dummyPostData";
 import { PostData } from "@/utils/postData";
 import Post from "@/components/Post";
 import Spacer from "@/components/Spacer";
 
 export default function Index() {
-  const [posts, setPosts] = useState<PostData[]>(getAllPosts());
+  const [posts, setPosts] = useState<PostData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpsertUserModalOpen, setIsUpsertUserModalOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
 
+  const getPostsFromLocal = async () => {
+    const posts = await getData("posts");
+    if (posts) {
+      setPosts(JSON.parse(posts));
+    }
+  };
+
   useEffect(() => {
     getItemWithSetter("user", setUserName);
+    getPostsFromLocal();
   }, []);
 
   return (
@@ -63,8 +71,7 @@ export default function Index() {
         <PostForm
           addNewPost={(post) => {
             setPosts([post, ...posts]);
-            // Legger innlegget til i globalPosts lista
-            addNewPost(post);
+            storeData("posts", JSON.stringify([post, ...posts]));
             setIsModalOpen(false);
           }}
           closeModal={() => setIsModalOpen(false)}
@@ -79,7 +86,23 @@ export default function Index() {
         ListHeaderComponent={() => <Spacer height={10} />}
         ListFooterComponent={() => <Spacer height={50} />}
         ItemSeparatorComponent={() => <Spacer height={8} />}
-        renderItem={(post) => <Post key={post.index} postData={post.item} />}
+        renderItem={(post) => (
+          <Post
+            key={post.index}
+            postData={post.item}
+            toggleLike={(id) => {
+              const tempPosts = posts.map((tempPost) => {
+                if (tempPost.id === id) {
+                  return { ...tempPost, isLiked: !tempPost.isLiked };
+                }
+                return tempPost;
+              });
+
+              setPosts(tempPosts);
+              storeData("posts", JSON.stringify(tempPosts));
+            }}
+          />
+        )}
       />
     </View>
   );

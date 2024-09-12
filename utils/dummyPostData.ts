@@ -1,14 +1,22 @@
 import { PostData } from "./postData";
 
-const globalPosts: PostData[] = [
+let globalPosts: PostData[] = [
     {
         title: "Min første post", 
         description: "Jeg har trua", 
         id: "p1", 
         hashtags: "#Kult! #fin", 
-        author: "Bjørn"
+        author: "Bjørn",
+        isLiked: false
     }
 ]
+
+export const toggleLike = (id: string) => {
+    const post = globalPosts.find((post) => post.id === id);
+    if (post) {
+        post.isLiked = !post.isLiked;
+    }
+}
 
 export const getPostById = (id: string) => {
     return globalPosts.find((post) => post.id === id);

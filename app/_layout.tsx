@@ -8,9 +8,11 @@ export default function RootLayout() {
         options={{
           headerShown: false,
           title: "Hjem",
+          animation: "slide_from_left",
         }}
       />
       <Stack.Screen name="postDetails/[id]" />
+      <Stack.Screen name="authentication" />
     </Stack>
   );
 }

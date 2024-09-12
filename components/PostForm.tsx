@@ -55,6 +55,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                 id: `postName-${titleText}`,
                 hashtags: hashtagText,
                 author: "Kul student",
+                isLiked: false,
               });
               setTitleText("");
               setDescriptionText("");

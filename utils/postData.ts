@@ -4,4 +4,5 @@ export interface PostData {
     id: string;
     hashtags: string;
     author: string;
+    isLiked: boolean;
   }

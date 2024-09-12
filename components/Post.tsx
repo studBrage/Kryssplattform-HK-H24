@@ -3,14 +3,14 @@ import { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Link } from "expo-router";
 import { PostData } from "@/utils/postData";
+import { isUserLoggedIn } from "@/utils/local_storage";
 
 type PostProps = {
   postData: PostData;
+  toggleLike: (id: string) => void;
 };
 
-export default function Post({ postData }: PostProps) {
-  const [liked, setLiked] = useState(false);
-
+export default function Post({ postData, toggleLike }: PostProps) {
   return (
     <Link
       href={{
@@ -24,12 +24,18 @@ export default function Post({ postData }: PostProps) {
           <View style={styles.textContainer}>
             <View style={styles.titleContainer}>
               <Text style={styles.postTitle}>{postData.title}</Text>
-              <Pressable onPress={() => setLiked(!liked)}>
+              <Pressable
+                onPress={async () => {
+                  if (await isUserLoggedIn()) {
+                    toggleLike(postData.id);
+                  }
+                }}
+              >
                 {/* Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken! */}
                 <AntDesign
                   name="smileo"
                   size={24}
-                  color={liked ? "#23C9FF" : "gray"}
+                  color={postData.isLiked ? "#23C9FF" : "gray"}
                 />
               </Pressable>
             </View>
