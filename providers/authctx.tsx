@@ -1,3 +1,4 @@
+import { deleteData, storeData } from "@/utils/local_storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createContext,
@@ -48,9 +49,11 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       value={{
         signIn: (userName: string) => {
           setUserSession(userName);
+          storeData("authSession", userName);
         },
         signOut: () => {
           setUserSession(null);
+          deleteData("authSession");
         },
         userNameSession: userSession,
         isLoading: isLoading,

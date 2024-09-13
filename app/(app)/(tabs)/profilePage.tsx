@@ -1,16 +1,18 @@
+import { useAuthSession } from "@/providers/authctx";
 import { clearAll, getItemWithSetter } from "@/utils/local_storage";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
 export default function ProfilePage() {
-  const [userName, setUserName] = useState<string | null>(null);
+  //const [userName, setUserName] = useState<string | null>(null);
+  const { userNameSession, signOut } = useAuthSession();
 
   const router = useRouter();
 
-  useEffect(() => {
-    getItemWithSetter("user", setUserName);
-  }, []);
+  // useEffect(() => {
+  //   getItemWithSetter("user", setUserName);
+  // }, []);
 
   return (
     <View
@@ -20,22 +22,19 @@ export default function ProfilePage() {
         alignItems: "center",
       }}
     >
-      {userName ? (
-        <Text style={styles.textStyle}>Hei {userName}!</Text>
-      ) : (
-        <Text style={styles.textStyle}>Hei, du er ikke logget inn!</Text>
-      )}
+      <Text style={styles.textStyle}>Hei {userNameSession}!</Text>
+
       <View
         style={{
           paddingTop: 20,
         }}
       >
-        {userName ? (
+        {userNameSession ? (
           <Pressable
             style={styles.alertButton}
             onPress={async () => {
-              await clearAll();
-              setUserName(null);
+              signOut();
+
               // router.push("/authentication");
             }}
           >

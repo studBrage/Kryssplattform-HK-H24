@@ -1,3 +1,4 @@
+import { useAuthSession } from "@/providers/authctx";
 import { storeData } from "@/utils/local_storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -8,6 +9,8 @@ const Authentication = () => {
   const [password, setPassword] = useState("");
 
   const router = useRouter();
+
+  const { signIn } = useAuthSession();
 
   return (
     <View
@@ -42,7 +45,7 @@ const Authentication = () => {
             style={styles.primaryButton}
             onPress={() => {
               // createUserName(userName);
-              storeData("user", userName);
+              signIn(userName);
               router.replace("/");
             }}
           >

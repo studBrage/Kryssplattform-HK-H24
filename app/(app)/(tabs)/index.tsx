@@ -16,12 +16,14 @@ import { addNewPost, getAllPosts, toggleLike } from "@/utils/dummyPostData";
 import { PostData } from "@/utils/postData";
 import Post from "@/components/Post";
 import Spacer from "@/components/Spacer";
+import { useAuthSession } from "@/providers/authctx";
 
 export default function Index() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpsertUserModalOpen, setIsUpsertUserModalOpen] = useState(false);
-  const [userName, setUserName] = useState<string | null>(null);
+  //const [userName, setUserName] = useState<string | null>(null);
+  const { userNameSession } = useAuthSession();
 
   const getPostsFromLocal = async () => {
     const posts = await getData("posts");
@@ -31,7 +33,7 @@ export default function Index() {
   };
 
   useEffect(() => {
-    getItemWithSetter("user", setUserName);
+    // getItemWithSetter("user", setUserName);
     getPostsFromLocal();
   }, []);
 
@@ -52,7 +54,7 @@ export default function Index() {
               style={{ paddingLeft: 6 }}
               onPress={() => setIsUpsertUserModalOpen(true)}
             >
-              <Text>{userName ? userName : "Profil"}</Text>
+              <Text>{userNameSession}</Text>
             </Pressable>
           ),
         }}
@@ -61,7 +63,7 @@ export default function Index() {
         <UpsertUser
           closeModal={() => setIsUpsertUserModalOpen(false)}
           createUserName={(name) => {
-            setUserName(name);
+            //setUserName(name);
             storeData("user", name);
             setIsUpsertUserModalOpen(false);
           }}
