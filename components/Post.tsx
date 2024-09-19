@@ -1,5 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { useState } from "react";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Link } from "expo-router";
 import { PostData } from "@/utils/postData";
@@ -21,6 +20,7 @@ export default function Post({ postData, toggleLike }: PostProps) {
     >
       <Pressable>
         <View style={styles.postContainer}>
+          <Image style={styles.postImage} source={{ uri: postData.imageURL }} />
           <View style={styles.textContainer}>
             <View style={styles.titleContainer}>
               <Text style={styles.postTitle}>{postData.title}</Text>
@@ -59,6 +59,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 8,
     borderRadius: 10,
+  },
+  postImage: {
+    height: 250,
+    width: "100%",
+    borderTopEndRadius: 10,
+    borderTopStartRadius: 10,
+    resizeMode: "cover",
   },
   textContainer: {
     paddingHorizontal: 10,
