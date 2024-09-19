@@ -7,8 +7,11 @@ import {
   Text,
   View,
   Image,
+  Modal,
+  ScrollView,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import { EvilIcons } from "@expo/vector-icons";
+import SelectImageModal from "./SelectImageModal";
 
 type PostFormProps = {
   addNewPost: (post: PostData) => void;
@@ -20,115 +23,109 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
   const [descriptionText, setDescriptionText] = useState("");
   const [hashtagText, setHashtagText] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
-  };
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.contentContainer}>
-        <Pressable onPress={() => pickImage()}>
-          <Text>Last opp bilde</Text>
-        </Pressable>
-        <View
-          style={{
-            width: "100%",
-            height: 300,
-            justifyContent: "center",
-            alignContent: "center",
-            overflow: "hidden",
-          }}
-        >
-          {image && (
-            <Image
-            style={{ resizeMode: "cover", width: "100%", height: 300 }}
-            source={{ uri: image }}
-          />
-          )}
-        </View>
-        <View style={styles.textFieldContainer}>
-          <Text style={styles.text}>Tittel</Text>
-          <TextInput
-            onChangeText={setTitleText}
-            value={titleText}
-            style={styles.textfield}
-            placeholder="Skriv inn tittel"
-          />
-        </View>
-        <View style={styles.textFieldContainer}>
-          <Text style={styles.text}>Beskrivelse</Text>
-          <TextInput
-            multiline
-            numberOfLines={3}
-            onChangeText={setDescriptionText}
-            value={descriptionText}
-            style={[styles.textfield, { height: 84 }]}
-            placeholder="Skriv inn beskrivelse"
-          />
-        </View>
-        <View style={styles.textFieldContainer}>
-          <Text style={styles.text}>Hashtags</Text>
-          <TextInput
-            onChangeText={setHashtagText}
-            value={hashtagText}
-            style={styles.textfield}
-            placeholder="#kultur #natur #mat"
-          />
-        </View>
-        <View style={styles.buttonContainer}>
+      <ScrollView
+        keyboardDismissMode="interactive"
+        automaticallyAdjustKeyboardInsets
+      >
+        <View style={styles.contentContainer}>
+          <Modal visible={isCameraOpen} animationType="slide">
+            <SelectImageModal
+              closeModal={() => setIsCameraOpen(false)}
+              setImage={setImage}
+            />
+          </Modal>
           <Pressable
-            style={styles.primaryButton}
-            onPress={() => {
-              addNewPost({
-                title: titleText,
-                description: descriptionText,
-                // midler for å generere en ikke fullt så unik id, hvis to poster har samme tittel vil det dukke opp en warning om children with the same key
-                // Dette løser seg selv når vi kan få unike IDer fra en backend
-                id: `postName-${titleText}`,
-                hashtags: hashtagText,
-                author: "Kul student",
-                isLiked: false,
-              });
-              setTitleText("");
-              setDescriptionText("");
-              setHashtagText("");
-            }}
+            onPress={() => setIsCameraOpen(true)}
+            style={styles.addImageBox}
           >
-            <Text style={{ color: "white" }}>Legg til post</Text>
+            {image ? (
+              <Image
+                source={{ uri: image }}
+                style={{ resizeMode: "cover", width: "100%", height: 300 }}
+                alt="Hmmmmm"
+              />
+            ) : (
+              <EvilIcons name="image" size={80} color="gray" />
+            )}
           </Pressable>
-          <Pressable
-            style={styles.secondaryButton}
-            onPress={() => closeModal()}
-          >
-            <Text
-              style={{
-                color: "#412E25",
+          <View style={styles.textFieldContainer}>
+            <Text style={styles.text}>Tittel</Text>
+            <TextInput
+              onChangeText={setTitleText}
+              value={titleText}
+              style={styles.textfield}
+              placeholder="Skriv inn tittel"
+            />
+          </View>
+          <View style={styles.textFieldContainer}>
+            <Text style={styles.text}>Beskrivelse</Text>
+            <TextInput
+              multiline
+              numberOfLines={3}
+              onChangeText={setDescriptionText}
+              value={descriptionText}
+              style={[styles.textfield, { height: 84 }]}
+              placeholder="Skriv inn beskrivelse"
+            />
+          </View>
+          <View style={styles.textFieldContainer}>
+            <Text style={styles.text}>Hashtags</Text>
+            <TextInput
+              onChangeText={setHashtagText}
+              value={hashtagText}
+              style={styles.textfield}
+              placeholder="#kultur #natur #mat"
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Pressable
+              style={styles.primaryButton}
+              onPress={() => {
+                addNewPost({
+                  title: titleText,
+                  description: descriptionText,
+                  // midler for å generere en ikke fullt så unik id, hvis to poster har samme tittel vil det dukke opp en warning om children with the same key
+                  // Dette løser seg selv når vi kan få unike IDer fra en backend
+                  id: `postName-${titleText}`,
+                  hashtags: hashtagText,
+                  author: "Kul student",
+                  isLiked: false,
+                  imageURL: image || "",
+                });
+                setTitleText("");
+                setDescriptionText("");
+                setHashtagText("");
               }}
             >
-              Avbryt
-            </Text>
-          </Pressable>
+              <Text style={{ color: "white" }}>Legg til post</Text>
+            </Pressable>
+            <Pressable
+              style={styles.secondaryButton}
+              onPress={() => closeModal()}
+            >
+              <Text
+                style={{
+                  color: "#412E25",
+                }}
+              >
+                Avbryt
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1,
+    height: "100%",
+    paddingTop: 72,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -139,6 +136,16 @@ const styles = StyleSheet.create({
   },
   textFieldContainer: {
     paddingTop: 8,
+  },
+  addImageBox: {
+    borderRadius: 10,
+    overflow: "hidden",
+    width: "100%",
+    height: 300,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "gray",
   },
   text: {},
   textfield: {
