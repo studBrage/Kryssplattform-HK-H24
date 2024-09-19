@@ -33,6 +33,12 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "We need to access your camera so that you can take beautiful pictures!"
+        }
       ]
     ],
     "experiments": {
