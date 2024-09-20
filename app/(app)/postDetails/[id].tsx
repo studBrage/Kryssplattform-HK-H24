@@ -2,8 +2,9 @@ import { getPostById } from "@/utils/dummyPostData";
 import { getPostFromLocalById } from "@/utils/local_storage";
 import { PostData } from "@/utils/postData";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 
 export default function postDetails() {
   const { id } = useLocalSearchParams();
@@ -16,7 +17,9 @@ export default function postDetails() {
     }
   };
 
-  fetchPostData();
+  useEffect(() => {
+    fetchPostData();
+  }, []);
 
   return (
     <View
@@ -32,6 +35,36 @@ export default function postDetails() {
         }}
       />
       <Text>{post?.title}</Text>
+      <View
+        style={{
+          width: "100%",
+          height: "50%",
+        }}
+      >
+        {post ? (
+          <MapView
+            initialRegion={{
+              latitude: post?.postCoordinates?.latitude ?? 0,
+              longitude: post?.postCoordinates?.longitude ?? 0,
+              latitudeDelta: 0.0122,
+              longitudeDelta: 0.0122,
+            }}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: post?.postCoordinates?.latitude ?? 0,
+                longitude: post?.postCoordinates?.longitude ?? 0,
+              }}
+            />
+          </MapView>
+        ) : (
+          <Text>Laster kart</Text>
+        )}
+      </View>
     </View>
   );
 }

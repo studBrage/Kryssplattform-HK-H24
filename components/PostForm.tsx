@@ -1,5 +1,5 @@
 import { PostData } from "@/utils/postData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -28,23 +28,38 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const [statusText, setStatusText] = useState<string | null>(null);
-  const [location, setLocation] = useState<Location.LocationObject | null>(
+  const [location, setLocation] =
+    useState<Location.LocationGeocodedAddress | null>(null);
+
+  const postCoordinatesData = useRef<Location.LocationObjectCoords | null>(
     null
   );
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log(status);
       if (status !== "granted") {
         setStatusText("Tillatelse til å bruke lokasjon ble ikke gitt");
         return;
       }
-
-      let location = await Location.getCurrentPositionAsync();
-      setLocation(location);
     })();
   }, []);
+
+  const getLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setStatusText("Tillatelse til å bruke lokasjon ble ikke gitt");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync();
+    postCoordinatesData.current = location.coords;
+    const locationAddress = await Location.reverseGeocodeAsync({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+    setLocation(locationAddress[0]);
+  };
 
   let text = "Dette blir en kul geolokasjon wow!";
   if (statusText) {
@@ -62,7 +77,10 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
         <View style={styles.contentContainer}>
           <Modal visible={isCameraOpen} animationType="slide">
             <SelectImageModal
-              closeModal={() => setIsCameraOpen(false)}
+              closeModal={() => {
+                setIsCameraOpen(false);
+                getLocation();
+              }}
               setImage={setImage}
             />
           </Modal>
@@ -80,7 +98,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
               <EvilIcons name="image" size={80} color="gray" />
             )}
           </Pressable>
-          <Text>{text}</Text>
+          <Text>{`${location?.street} ${location?.streetNumber} - ${location?.city}, ${location?.country}`}</Text>
           <View style={styles.textFieldContainer}>
             <Text style={styles.text}>Tittel</Text>
             <TextInput
@@ -124,6 +142,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                   author: "Kul student",
                   isLiked: false,
                   imageURL: image || "",
+                  postCoordinates: postCoordinatesData.current,
                 });
                 setTitleText("");
                 setDescriptionText("");

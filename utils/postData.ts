@@ -1,3 +1,5 @@
+import { LocationObjectCoords } from "expo-location";
+
 export interface PostData {
   title: string;
   description: string;
@@ -6,4 +8,5 @@ export interface PostData {
   author: string;
   isLiked: boolean;
   imageURL: string;
+  postCoordinates: LocationObjectCoords | null;
 }
