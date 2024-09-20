@@ -1,5 +1,5 @@
 import { PostData } from "@/utils/postData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -13,6 +13,8 @@ import {
 import { EvilIcons } from "@expo/vector-icons";
 import SelectImageModal from "./SelectImageModal";
 
+import * as Location from "expo-location";
+
 type PostFormProps = {
   addNewPost: (post: PostData) => void;
   closeModal: () => void;
@@ -24,6 +26,32 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
   const [hashtagText, setHashtagText] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const [statusText, setStatusText] = useState<string | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log(status);
+      if (status !== "granted") {
+        setStatusText("Tillatelse til å bruke lokasjon ble ikke gitt");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync();
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = "Dette blir en kul geolokasjon wow!";
+  if (statusText) {
+    text = statusText;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -52,6 +80,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
               <EvilIcons name="image" size={80} color="gray" />
             )}
           </Pressable>
+          <Text>{text}</Text>
           <View style={styles.textFieldContainer}>
             <Text style={styles.text}>Tittel</Text>
             <TextInput
