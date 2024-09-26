@@ -29,7 +29,7 @@ export default function AppLayout() {
         name="(tabs)"
         options={{
           headerShown: false,
-          title: "Hjem",
+          title: "Tilbake",
           animation: "slide_from_left",
         }}
       />
