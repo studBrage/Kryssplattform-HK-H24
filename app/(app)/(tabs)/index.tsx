@@ -5,6 +5,7 @@ import {
   Pressable,
   FlatList,
   Modal,
+  RefreshControl,
 } from "react-native";
 
 import { useEffect, useState } from "react";
@@ -17,11 +18,13 @@ import { PostData } from "@/utils/postData";
 import Post from "@/components/Post";
 import Spacer from "@/components/Spacer";
 import { useAuthSession } from "@/providers/authctx";
+import * as postApi from "@/api/postApi";
 
 export default function Index() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpsertUserModalOpen, setIsUpsertUserModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   //const [userName, setUserName] = useState<string | null>(null);
   const { userNameSession } = useAuthSession();
 
@@ -32,9 +35,17 @@ export default function Index() {
     }
   };
 
+  const getPostsFromBackend = async () => {
+    setRefreshing(true);
+    const posts = await postApi.getAllPosts();
+    setPosts(posts);
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     // getItemWithSetter("user", setUserName);
-    getPostsFromLocal();
+    // getPostsFromLocal();
+    getPostsFromBackend();
   }, []);
 
   return (
@@ -50,10 +61,7 @@ export default function Index() {
             </Pressable>
           ),
           headerLeft: () => (
-            <Pressable
-              style={{ paddingLeft: 6 }}
-              onPress={() => setIsUpsertUserModalOpen(true)}
-            >
+            <Pressable style={{ paddingLeft: 6 }} onPress={async () => {}}>
               <Text>{userNameSession}</Text>
             </Pressable>
           ),
@@ -71,9 +79,8 @@ export default function Index() {
       </Modal>
       <Modal visible={isModalOpen} animationType="slide">
         <PostForm
-          addNewPost={(post) => {
-            setPosts([post, ...posts]);
-            storeData("posts", JSON.stringify([post, ...posts]));
+          addNewPost={async () => {
+            await getPostsFromBackend();
             setIsModalOpen(false);
           }}
           closeModal={() => setIsModalOpen(false)}
@@ -88,6 +95,12 @@ export default function Index() {
         ListHeaderComponent={() => <Spacer height={10} />}
         ListFooterComponent={() => <Spacer height={50} />}
         ItemSeparatorComponent={() => <Spacer height={8} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={getPostsFromBackend}
+          />
+        }
         renderItem={(post) => (
           <Post
             key={post.index}
@@ -100,8 +113,8 @@ export default function Index() {
                 return tempPost;
               });
 
-              setPosts(tempPosts);
-              storeData("posts", JSON.stringify(tempPosts));
+              // setPosts(tempPosts);
+              // storeData("posts", JSON.stringify(tempPosts));
             }}
           />
         )}

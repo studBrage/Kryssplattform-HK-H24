@@ -14,9 +14,10 @@ import { EvilIcons } from "@expo/vector-icons";
 import SelectImageModal from "./SelectImageModal";
 
 import * as Location from "expo-location";
+import * as postApi from "@/api/postApi";
 
 type PostFormProps = {
-  addNewPost: (post: PostData) => void;
+  addNewPost: () => void;
   closeModal: () => void;
 };
 
@@ -131,8 +132,8 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
           <View style={styles.buttonContainer}>
             <Pressable
               style={styles.primaryButton}
-              onPress={() => {
-                addNewPost({
+              onPress={async () => {
+                const newPost: PostData = {
                   title: titleText,
                   description: descriptionText,
                   // midler for å generere en ikke fullt så unik id, hvis to poster har samme tittel vil det dukke opp en warning om children with the same key
@@ -143,7 +144,9 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                   isLiked: false,
                   imageURL: image || "",
                   postCoordinates: postCoordinatesData.current,
-                });
+                };
+                await postApi.createPost(newPost);
+                addNewPost();
                 setTitleText("");
                 setDescriptionText("");
                 setHashtagText("");

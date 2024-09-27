@@ -5,6 +5,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import * as postApi from "@/api/postApi";
 
 export default function postDetails() {
   const { id } = useLocalSearchParams();
@@ -17,8 +18,16 @@ export default function postDetails() {
     }
   };
 
+  const fetchPostFromBackend = async () => {
+    const post = await postApi.getPostById(id as string);
+    if (post) {
+      setPost(post);
+    }
+  };
+
   useEffect(() => {
-    fetchPostData();
+    // fetchPostData();
+    fetchPostFromBackend();
   }, []);
 
   return (
