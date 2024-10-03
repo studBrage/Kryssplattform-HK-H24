@@ -1,5 +1,12 @@
 import { PostData } from "@/utils/postData";
-import { addDoc, collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
 export const createPost = async (post: PostData) => {
@@ -26,4 +33,13 @@ export const getPostById = async (id: string) => {
     ...specificPost.data(),
     id: specificPost.id,
   } as PostData;
+};
+
+export const deletePost = async (id: string) => {
+  try {
+    await deleteDoc(doc(db, "posts", id));
+    console.log("Document successfully deleted!");
+  } catch (e) {
+    console.error("Error removing document: ", e);
+  }
 };
