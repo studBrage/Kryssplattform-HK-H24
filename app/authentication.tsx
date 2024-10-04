@@ -75,7 +75,7 @@ const Authentication = () => {
             style={styles.primaryButton}
             onPress={() => {
               // createUserName(userName);
-              signIn(userName, password);
+              signIn(userEmail, password);
             }}
           >
             <Text
