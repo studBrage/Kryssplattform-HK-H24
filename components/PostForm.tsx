@@ -15,6 +15,7 @@ import SelectImageModal from "./SelectImageModal";
 
 import * as Location from "expo-location";
 import * as postApi from "@/api/postApi";
+import * as imageApi from "@/api/imageApi";
 
 type PostFormProps = {
   addNewPost: () => void;
@@ -145,11 +146,14 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                   imageURL: image || "",
                   postCoordinates: postCoordinatesData.current,
                 };
-                await postApi.createPost(newPost);
-                addNewPost();
-                setTitleText("");
-                setDescriptionText("");
-                setHashtagText("");
+                if (image) {
+                  await imageApi.uploadImageToFirebase(image);
+                }
+                // await postApi.createPost(newPost);
+                // addNewPost();
+                // setTitleText("");
+                // setDescriptionText("");
+                // setHashtagText("");
               }}
             >
               <Text style={{ color: "white" }}>Legg til post</Text>
