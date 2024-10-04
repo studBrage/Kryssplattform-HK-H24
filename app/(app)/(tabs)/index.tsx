@@ -26,7 +26,7 @@ export default function Index() {
   const [isUpsertUserModalOpen, setIsUpsertUserModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   //const [userName, setUserName] = useState<string | null>(null);
-  const { userNameSession } = useAuthSession();
+  const { userNameSession, signOut } = useAuthSession();
 
   const getPostsFromLocal = async () => {
     const posts = await getData("posts");
@@ -61,7 +61,12 @@ export default function Index() {
             </Pressable>
           ),
           headerLeft: () => (
-            <Pressable style={{ paddingLeft: 6 }} onPress={async () => {}}>
+            <Pressable
+              style={{ paddingLeft: 6 }}
+              onPress={async () => {
+                signOut();
+              }}
+            >
               <Text>{userNameSession}</Text>
             </Pressable>
           ),

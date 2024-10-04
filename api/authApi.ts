@@ -10,3 +10,9 @@ export const signIn = async (email: string, password: string) => {
       console.log("Oops, kunne ikke logge inn", error);
     });
 };
+
+export const signOut = async () => {
+  await auth.signOut().then(() => {
+    console.log("Signed out");
+  });
+};

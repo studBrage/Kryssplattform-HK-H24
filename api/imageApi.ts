@@ -6,17 +6,19 @@ export const uploadImageToFirebase = async (uri: string) => {
   const blob = await fetchResponse.blob();
 
   const imagePath = uri.split("/").pop()?.split(".")[0] ?? "anonymtBilde";
+  console.log("imagepath", imagePath);
 
   const uploadPath = `images/${imagePath}`;
 
   const imageRef = getStorageRef(uploadPath);
-  console.log("Laster opp bilde til", imageRef);
 
   try {
     console.log("pls");
     await uploadBytes(imageRef, blob);
     console.log("Uploading image to", uploadPath);
+    return uploadPath;
   } catch (e) {
     console.error("error uploading image", e);
+    return "ERROR";
   }
 };

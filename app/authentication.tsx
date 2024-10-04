@@ -6,9 +6,10 @@ import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 
 const Authentication = () => {
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const { signIn } = useAuthSession();
 
@@ -21,13 +22,24 @@ const Authentication = () => {
       }}
     >
       <View style={styles.mainContainer}>
+        {isSignUp && (
+          <View style={styles.textFieldContainer}>
+            <Text>Brukernavn</Text>
+            <TextInput
+              value={userName}
+              onChangeText={setUserName}
+              style={styles.textField}
+              placeholder="Brukernavn"
+            />
+          </View>
+        )}
         <View style={styles.textFieldContainer}>
-          <Text>Brukernavn</Text>
+          <Text>Epost</Text>
           <TextInput
-            value={userName}
-            onChangeText={setUserName}
+            value={userEmail}
+            onChangeText={setUserEmail}
             style={styles.textField}
-            placeholder="Brukernavn"
+            placeholder="Epost"
           />
         </View>
         <View style={styles.textFieldContainer}>
@@ -40,13 +52,30 @@ const Authentication = () => {
             placeholder="Passord"
           />
         </View>
+        {!isSignUp && (
+          <Pressable
+            style={{
+              paddingTop: 24,
+            }}
+            onPress={() => {
+              setIsSignUp(true);
+            }}
+          >
+            <Text
+              style={{
+                textDecorationLine: "underline",
+              }}
+            >
+              Lag bruker
+            </Text>
+          </Pressable>
+        )}
         <View style={styles.buttonContainer}>
           <Pressable
             style={styles.primaryButton}
             onPress={() => {
               // createUserName(userName);
-              signIn(userName);
-              router.replace("/");
+              signIn(userName, password);
             }}
           >
             <Text
@@ -57,12 +86,14 @@ const Authentication = () => {
               Lag bruker
             </Text>
           </Pressable>
-          {/* <Pressable
-            style={styles.secondaryButton}
-            onPress={() => closeModal()}
-          >
-            <Text>Avbryt</Text>
-          </Pressable> */}
+          {isSignUp && (
+            <Pressable
+              style={styles.secondaryButton}
+              onPress={() => setIsSignUp(false)}
+            >
+              <Text>Avbryt</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </View>

@@ -146,14 +146,12 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                   imageURL: image || "",
                   postCoordinates: postCoordinatesData.current,
                 };
-                if (image) {
-                  await imageApi.uploadImageToFirebase(image);
-                }
-                // await postApi.createPost(newPost);
-                // addNewPost();
-                // setTitleText("");
-                // setDescriptionText("");
-                // setHashtagText("");
+
+                await postApi.createPost(newPost);
+                addNewPost();
+                setTitleText("");
+                setDescriptionText("");
+                setHashtagText("");
               }}
             >
               <Text style={{ color: "white" }}>Legg til post</Text>

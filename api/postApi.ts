@@ -7,11 +7,22 @@ import {
   getDoc,
   getDocs,
 } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
+import { db, getDownloadUrl } from "@/firebaseConfig";
+import { uploadImageToFirebase } from "./imageApi";
 
 export const createPost = async (post: PostData) => {
   try {
-    const docRef = await addDoc(collection(db, "posts"), post);
+    const firebaseImage = await uploadImageToFirebase(post.imageURL);
+    console.log("firebaseImage", firebaseImage);
+    if (firebaseImage === "ERROR") {
+      return;
+    }
+    const postImageDownloadUrl = await getDownloadUrl(firebaseImage);
+    const postWithImageData: PostData = {
+      ...post,
+      imageURL: postImageDownloadUrl,
+    };
+    const docRef = await addDoc(collection(db, "posts"), postWithImageData);
     console.log("Document written with ID:", docRef.id);
   } catch (e) {
     console.log("Error adding document", e);

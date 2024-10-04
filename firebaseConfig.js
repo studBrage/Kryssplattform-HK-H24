@@ -4,7 +4,7 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 import firebaseConfig from './firebaseEnv.js';
 import { getFirestore } from "firebase/firestore";
-import {getStorage, ref} from "firebase/storage";
+import {getDownloadURL, getStorage, ref} from "firebase/storage";
 import { initializeAuth, getReactNativePersistence} from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 
@@ -21,3 +21,8 @@ export const db = getFirestore(app);
 const storage = getStorage(app);
 
 export const getStorageRef = (path) => ref(storage, path);
+
+export const getDownloadUrl = async (path) => {
+    const url = await getDownloadURL(ref(storage, path));
+    return url;
+}

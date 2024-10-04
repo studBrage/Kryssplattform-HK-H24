@@ -1,5 +1,8 @@
+import { auth } from "@/firebaseConfig";
 import { deleteData, storeData } from "@/utils/local_storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   createContext,
   ReactNode,
@@ -7,16 +10,17 @@ import {
   useEffect,
   useState,
 } from "react";
+import * as authApi from "@/api/authApi";
 
 type AuthContextType = {
-  signIn: (username: string) => void;
+  signIn: (username: string, password: string) => void;
   signOut: VoidFunction;
   userNameSession?: string | null;
   isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
-  signIn: (s: string) => null,
+  signIn: (s: string, p: string) => null,
   signOut: () => null,
   userNameSession: null,
   isLoading: false,
@@ -37,9 +41,16 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [userSession, setUserSession] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const router = useRouter();
+
   useEffect(() => {
-    AsyncStorage.getItem("authSession").then((value) => {
-      setUserSession(value);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserSession(user.email);
+      } else {
+        setUserSession(null);
+      }
+      router.replace("/");
       setIsLoading(false);
     });
   }, []);
@@ -47,13 +58,15 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: (userName: string) => {
-          setUserSession(userName);
-          storeData("authSession", userName);
+        signIn: async (userName: string, password: string) => {
+          await authApi.signIn(userName, password);
+          // setUserSession(userName);
+          // storeData("authSession", userName);
         },
-        signOut: () => {
-          setUserSession(null);
-          deleteData("authSession");
+        signOut: async () => {
+          await authApi.signOut();
+          // setUserSession(null);
+          // deleteData("authSession");
         },
         userNameSession: userSession,
         isLoading: isLoading,
