@@ -46,7 +46,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserSession(user.email);
+        setUserSession(user.displayName);
       } else {
         setUserSession(null);
       }

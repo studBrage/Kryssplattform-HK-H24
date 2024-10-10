@@ -15,7 +15,7 @@ import SelectImageModal from "./SelectImageModal";
 
 import * as Location from "expo-location";
 import * as postApi from "@/api/postApi";
-import * as imageApi from "@/api/imageApi";
+import { useAuthSession } from "@/providers/authctx";
 
 type PostFormProps = {
   addNewPost: () => void;
@@ -28,6 +28,8 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
   const [hashtagText, setHashtagText] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const { userNameSession } = useAuthSession();
 
   const [statusText, setStatusText] = useState<string | null>(null);
   const [location, setLocation] =
@@ -141,7 +143,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                   // Dette løser seg selv når vi kan få unike IDer fra en backend
                   id: `postName-${titleText}`,
                   hashtags: hashtagText,
-                  author: "Kul student",
+                  author: userNameSession || "Anonym",
                   isLiked: false,
                   imageURL: image || "",
                   postCoordinates: postCoordinatesData.current,
