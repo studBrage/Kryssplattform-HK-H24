@@ -1,5 +1,5 @@
 import { getStorageRef } from "@/firebaseConfig";
-import { uploadBytes } from "firebase/storage";
+import { uploadBytes, uploadBytesResumable } from "firebase/storage";
 
 export const uploadImageToFirebase = async (uri: string) => {
   const fetchResponse = await fetch(uri);
@@ -14,7 +14,7 @@ export const uploadImageToFirebase = async (uri: string) => {
 
   try {
     console.log("pls");
-    await uploadBytes(imageRef, blob);
+    await uploadBytesResumable(imageRef, blob);
     console.log("Uploading image to", uploadPath);
     return uploadPath;
   } catch (e) {
