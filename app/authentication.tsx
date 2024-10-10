@@ -3,6 +3,7 @@ import { storeData } from "@/utils/local_storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
+import * as authApi from "@/api/authApi";
 
 const Authentication = () => {
   const [userName, setUserName] = useState("");
@@ -74,8 +75,11 @@ const Authentication = () => {
           <Pressable
             style={styles.primaryButton}
             onPress={() => {
-              // createUserName(userName);
-              signIn(userEmail, password);
+              if (isSignUp) {
+                authApi.signUp(userEmail, password, userName);
+              } else {
+                signIn(userEmail, password);
+              }
             }}
           >
             <Text
@@ -83,7 +87,7 @@ const Authentication = () => {
                 color: "white",
               }}
             >
-              Lag bruker
+              {isSignUp ? "Lag bruker" : "Logg inn"}
             </Text>
           </Pressable>
           {isSignUp && (
