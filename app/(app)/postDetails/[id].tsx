@@ -1,6 +1,6 @@
 import { getPostById } from "@/utils/dummyPostData";
 import { getPostFromLocalById } from "@/utils/local_storage";
-import { PostData } from "@/utils/postData";
+import { CommentObject, PostData } from "@/utils/postData";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -10,6 +10,7 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as postApi from "@/api/postApi";
@@ -20,11 +21,13 @@ import { useAuthSession } from "@/providers/authctx";
 export default function postDetails() {
   const { id } = useLocalSearchParams();
   const [post, setPost] = useState<PostData | null>(null);
+  const [postComments, setPostComments] = useState<CommentObject[]>([]);
   const [postLocation, setPostLocation] = useState("Laster");
 
   const [commentText, setCommentText] = useState("");
 
-  const [isLoadingAddComment, setIsLoadingComment] = useState(false);
+  const [isLoadingAddComment, setIsLoadingAddComment] = useState(false);
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
 
   const { userNameSession } = useAuthSession();
 
@@ -37,10 +40,19 @@ export default function postDetails() {
     }
   };
 
+  const fetchComments = async (commentIds: string[]) => {
+    const comments = await commentApi.getCommentsByIds(commentIds);
+    if (comments) {
+      setPostComments(comments);
+    }
+    setIsLoadingComments(false);
+  };
+
   const fetchPostFromBackend = async () => {
     const backendPost = await postApi.getPostById(id as string);
     if (backendPost) {
       setPost(backendPost);
+      fetchComments(backendPost.comments);
       const location = await Location.reverseGeocodeAsync({
         latitude: backendPost.postCoordinates?.latitude ?? 0,
         longitude: backendPost.postCoordinates?.longitude ?? 0,
@@ -97,6 +109,25 @@ export default function postDetails() {
         </View>
         <View>
           <Text>Kommentarer</Text>
+          <View>
+            {isLoadingComments ? (
+              <ActivityIndicator />
+            ) : (
+              postComments.map((comment) => {
+                return (
+                  <View
+                    key={comment.id}
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text>{comment.comment.authorName}</Text>
+                    <Text>{comment.comment.comment}</Text>
+                  </View>
+                );
+              })
+            )}
+          </View>
           <View
             style={{
               paddingTop: 16,
@@ -122,18 +153,22 @@ export default function postDetails() {
               }}
               onPress={async () => {
                 if (post && commentText !== "") {
-                  setIsLoadingComment(true);
+                  setIsLoadingAddComment(true);
                   await commentApi.addComment(post.id, {
                     authorId: "",
                     comment: commentText,
                     authorName: userNameSession ?? "Boogeyman",
                   });
                   setCommentText("");
-                  setIsLoadingComment(false);
+                  setIsLoadingAddComment(false);
                 }
               }}
             >
-              <Text>Legg til</Text>
+              {isLoadingAddComment ? (
+                <ActivityIndicator />
+              ) : (
+                <Text>Legg til</Text>
+              )}
             </Pressable>
           </View>
         </View>
