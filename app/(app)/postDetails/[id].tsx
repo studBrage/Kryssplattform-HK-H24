@@ -3,15 +3,30 @@ import { getPostFromLocalById } from "@/utils/local_storage";
 import { PostData } from "@/utils/postData";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View, Image, Pressable, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  Pressable,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as postApi from "@/api/postApi";
 import * as Location from "expo-location";
+import * as commentApi from "@/api/commentApi";
+import { useAuthSession } from "@/providers/authctx";
 
 export default function postDetails() {
   const { id } = useLocalSearchParams();
   const [post, setPost] = useState<PostData | null>(null);
   const [postLocation, setPostLocation] = useState("Laster");
+
+  const [commentText, setCommentText] = useState("");
+
+  const [isLoadingAddComment, setIsLoadingComment] = useState(false);
+
+  const { userNameSession } = useAuthSession();
 
   const router = useRouter();
 
@@ -79,6 +94,48 @@ export default function postDetails() {
           >
             {post?.author}
           </Text>
+        </View>
+        <View>
+          <Text>Kommentarer</Text>
+          <View
+            style={{
+              paddingTop: 16,
+              flexDirection: "row",
+              width: "100%",
+            }}
+          >
+            <TextInput
+              value={commentText}
+              onChangeText={setCommentText}
+              style={{
+                borderBottomWidth: 1,
+                borderColor: "gray",
+                width: "100%",
+                marginTop: 2,
+              }}
+            />
+            <Pressable
+              style={{
+                position: "absolute",
+                right: 10,
+                top: "70%",
+              }}
+              onPress={async () => {
+                if (post && commentText !== "") {
+                  setIsLoadingComment(true);
+                  await commentApi.addComment(post.id, {
+                    authorId: "",
+                    comment: commentText,
+                    authorName: userNameSession ?? "Boogeyman",
+                  });
+                  setCommentText("");
+                  setIsLoadingComment(false);
+                }
+              }}
+            >
+              <Text>Legg til</Text>
+            </Pressable>
+          </View>
         </View>
         {post && (
           <View style={styles.mapContainer}>

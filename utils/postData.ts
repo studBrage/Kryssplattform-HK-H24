@@ -9,4 +9,16 @@ export interface PostData {
   isLiked: boolean;
   imageURL: string;
   postCoordinates: LocationObjectCoords | null;
+  comments: string[];
+}
+
+export interface CommentObject {
+  id: string;
+  comment: CommentData;
+}
+
+export interface CommentData {
+  authorId: string;
+  authorName: string;
+  comment: string;
 }

@@ -147,6 +147,7 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
                   isLiked: false,
                   imageURL: image || "",
                   postCoordinates: postCoordinatesData.current,
+                  comments: [],
                 };
 
                 await postApi.createPost(newPost);
