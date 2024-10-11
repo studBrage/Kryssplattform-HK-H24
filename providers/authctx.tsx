@@ -2,7 +2,7 @@ import { auth } from "@/firebaseConfig";
 import { deleteData, storeData } from "@/utils/local_storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import {
   createContext,
   ReactNode,
@@ -17,6 +17,7 @@ type AuthContextType = {
   signOut: VoidFunction;
   userNameSession?: string | null;
   isLoading: boolean;
+  user: User | null;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: () => null,
   userNameSession: null,
   isLoading: false,
+  user: null,
 });
 
 export function useAuthSession() {
@@ -39,6 +41,7 @@ export function useAuthSession() {
 
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [userSession, setUserSession] = useState<string | null>(null);
+  const [userAuthSession, setUserAuthSession] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
@@ -47,8 +50,10 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserSession(user.displayName);
+        setUserAuthSession(user);
       } else {
         setUserSession(null);
+        setUserAuthSession(null);
       }
       router.replace("/");
       setIsLoading(false);
@@ -69,6 +74,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           // deleteData("authSession");
         },
         userNameSession: userSession,
+        user: userAuthSession,
         isLoading: isLoading,
       }}
     >

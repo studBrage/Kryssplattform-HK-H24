@@ -29,7 +29,7 @@ export default function postDetails() {
   const [isLoadingAddComment, setIsLoadingAddComment] = useState(false);
   const [isLoadingComments, setIsLoadingComments] = useState(true);
 
-  const { userNameSession } = useAuthSession();
+  const { userNameSession, user } = useAuthSession();
 
   const router = useRouter();
 
@@ -155,7 +155,7 @@ export default function postDetails() {
                 if (post && commentText !== "") {
                   setIsLoadingAddComment(true);
                   await commentApi.addComment(post.id, {
-                    authorId: "",
+                    authorId: user?.uid ?? "Tull",
                     comment: commentText,
                     authorName: userNameSession ?? "Boogeyman",
                   });
