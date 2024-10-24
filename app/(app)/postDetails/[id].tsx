@@ -2,7 +2,7 @@ import { getPostById } from "@/utils/dummyPostData";
 import { getPostFromLocalById } from "@/utils/local_storage";
 import { CommentObject, PostData } from "@/utils/postData";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -29,6 +29,8 @@ export default function postDetails() {
   const [isLoadingAddComment, setIsLoadingAddComment] = useState(false);
   const [isLoadingComments, setIsLoadingComments] = useState(true);
 
+  const visibleCommentIds = useRef<string[]>([]);
+
   const { userNameSession, user } = useAuthSession();
 
   const router = useRouter();
@@ -53,6 +55,7 @@ export default function postDetails() {
     if (backendPost) {
       setPost(backendPost);
       fetchComments(backendPost.comments);
+      visibleCommentIds.current = backendPost.comments;
       const location = await Location.reverseGeocodeAsync({
         latitude: backendPost.postCoordinates?.latitude ?? 0,
         longitude: backendPost.postCoordinates?.longitude ?? 0,
@@ -118,11 +121,43 @@ export default function postDetails() {
                   <View
                     key={comment.id}
                     style={{
+                      width: "100%",
                       flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
                   >
-                    <Text>{comment.comment.authorName}</Text>
-                    <Text>{comment.comment.comment}</Text>
+                    <View
+                      key={comment.id}
+                      style={{
+                        flexDirection: "row",
+                        gap: 4,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "grey",
+                        }}
+                      >
+                        {comment.comment.authorName}:
+                      </Text>
+                      <Text>{comment.comment.comment}</Text>
+                    </View>
+                    {comment.comment.authorId === user?.uid && (
+                      <Pressable
+                        onPress={() => {
+                          commentApi.deleteComment(comment.id, post?.id ?? "");
+                          setPostComments(
+                            postComments.filter((c) => c.id !== comment.id)
+                          );
+                          visibleCommentIds.current =
+                            visibleCommentIds.current.filter(
+                              (id) => id !== comment.id
+                            );
+                        }}
+                      >
+                        <Text style={{ color: "red" }}>Slett</Text>
+                      </Pressable>
+                    )}
                   </View>
                 );
               })
@@ -154,13 +189,17 @@ export default function postDetails() {
               onPress={async () => {
                 if (post && commentText !== "") {
                   setIsLoadingAddComment(true);
-                  await commentApi.addComment(post.id, {
+                  const newCOmment = await commentApi.addComment(post.id, {
                     authorId: user?.uid ?? "Tull",
                     comment: commentText,
                     authorName: userNameSession ?? "Boogeyman",
                   });
-                  setCommentText("");
-                  setIsLoadingAddComment(false);
+                  if (newCOmment) {
+                    visibleCommentIds.current.push(newCOmment);
+                    await fetchComments(visibleCommentIds.current);
+                    setCommentText("");
+                    setIsLoadingAddComment(false);
+                  }
                 }
               }}
             >

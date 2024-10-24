@@ -2,7 +2,9 @@ import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Link } from "expo-router";
 import { PostData } from "@/utils/postData";
-import { isUserLoggedIn } from "@/utils/local_storage";
+import * as postApi from "@/api/postApi";
+import { useAuthSession } from "@/providers/authctx";
+import { useState } from "react";
 
 type PostProps = {
   postData: PostData;
@@ -10,6 +12,13 @@ type PostProps = {
 };
 
 export default function Post({ postData, toggleLike }: PostProps) {
+  const { user } = useAuthSession();
+
+  const [isLiked, setIsLiked] = useState(
+    postData.likes?.includes(user?.uid ?? "") ?? false
+  );
+
+  const [numLikes, setNumLikes] = useState(postData.likes?.length ?? 0);
   return (
     <Link
       href={{
@@ -24,20 +33,34 @@ export default function Post({ postData, toggleLike }: PostProps) {
           <View style={styles.textContainer}>
             <View style={styles.titleContainer}>
               <Text style={styles.postTitle}>{postData.title}</Text>
-              <Pressable
-                onPress={async () => {
-                  if (await isUserLoggedIn()) {
-                    toggleLike(postData.id);
-                  }
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
-                {/* Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken! */}
-                <AntDesign
-                  name="smileo"
-                  size={24}
-                  color={postData.isLiked ? "#23C9FF" : "gray"}
-                />
-              </Pressable>
+                <Text>{numLikes}</Text>
+                <Pressable
+                  onPress={async () => {
+                    if (isLiked) {
+                      setNumLikes(numLikes - 1);
+                      setIsLiked(false);
+                    } else {
+                      setNumLikes(numLikes + 1);
+                      setIsLiked(true);
+                    }
+                    await postApi.toggleLikePost(postData.id, user?.uid ?? "");
+                  }}
+                >
+                  {/* Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken! */}
+                  <AntDesign
+                    name="smileo"
+                    size={24}
+                    color={isLiked ? "#23C9FF" : "gray"}
+                  />
+                </Pressable>
+              </View>
             </View>
             <Text style={styles.postContent}>{postData.description}</Text>
             <View style={styles.bottomContainer}>

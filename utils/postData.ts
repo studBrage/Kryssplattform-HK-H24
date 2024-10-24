@@ -7,6 +7,7 @@ export interface PostData {
   hashtags: string;
   author: string;
   isLiked: boolean;
+  likes: string[];
   imageURL: string;
   postCoordinates: LocationObjectCoords | null;
   comments: string[];

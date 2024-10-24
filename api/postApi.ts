@@ -6,6 +6,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { db, getDownloadUrl } from "@/firebaseConfig";
 import { uploadImageToFirebase } from "./imageApi";
@@ -52,5 +53,27 @@ export const deletePost = async (id: string) => {
     console.log("Document successfully deleted!");
   } catch (e) {
     console.error("Error removing document: ", e);
+  }
+};
+
+export const toggleLikePost = async (id: string, userId: string) => {
+  const postRef = doc(db, "posts", id);
+  const post = await getDoc(postRef);
+  // Beklager litt stygg kode her med ? og !
+  if (post.data()?.likes) {
+    const likes = post.data()!.likes;
+    if (likes.includes(userId)) {
+      await updateDoc(postRef, {
+        likes: likes.filter((like: string) => like !== userId),
+      });
+    } else {
+      await updateDoc(postRef, {
+        likes: [...likes, userId],
+      });
+    }
+  } else {
+    await updateDoc(postRef, {
+      likes: [userId],
+    });
   }
 };

@@ -2,11 +2,12 @@ import { db } from "@/firebaseConfig";
 import { CommentData, CommentObject } from "@/utils/postData";
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
-  getDocs,
   updateDoc,
 } from "firebase/firestore";
 
@@ -36,5 +37,17 @@ export const getCommentsByIds = async (ids: string[]) => {
     });
   } catch (error) {
     console.log("Error getting comments", error);
+  }
+};
+
+export const deleteComment = async (commentId: string, postId: string) => {
+  try {
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+      comments: arrayRemove(commentId),
+    });
+    await deleteDoc(doc(db, "comments", commentId));
+  } catch (error) {
+    console.log("Error deleting document: ", error);
   }
 };
