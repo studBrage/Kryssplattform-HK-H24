@@ -3,7 +3,7 @@ import { Redirect, Stack } from "expo-router";
 import { Text, View } from "react-native";
 
 export default function AppLayout() {
-  const { userNameSession, isLoading } = useAuthSession();
+  const { userNameSession, isLoading, user } = useAuthSession();
 
   if (isLoading) {
     return (
@@ -19,8 +19,8 @@ export default function AppLayout() {
     );
   }
 
-  if (!userNameSession) {
-    return <Redirect href="/authentication" />
+  if (!user) {
+    return <Redirect href="/authentication" />;
   }
 
   return (

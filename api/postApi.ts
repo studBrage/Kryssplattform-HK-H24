@@ -6,6 +6,8 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
+  query,
   updateDoc,
 } from "firebase/firestore";
 import { db, getDownloadUrl } from "@/firebaseConfig";
@@ -75,5 +77,18 @@ export const toggleLikePost = async (id: string, userId: string) => {
     await updateDoc(postRef, {
       likes: [userId],
     });
+  }
+};
+
+export const getSortedPosts = async (isRising: boolean) => {
+  try {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, "posts"),
+        orderBy("title", isRising ? "asc" : "desc")
+      )
+    );
+  } catch (error) {
+    console.log("Error getting sorted data: ", error);
   }
 };
