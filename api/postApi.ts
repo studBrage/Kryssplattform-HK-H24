@@ -4,11 +4,16 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
   getDoc,
   getDocs,
+  limit,
   orderBy,
   query,
+  QueryDocumentSnapshot,
+  startAfter,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db, getDownloadUrl } from "@/firebaseConfig";
 import { uploadImageToFirebase } from "./imageApi";
@@ -38,6 +43,40 @@ export const getAllPosts = async () => {
     console.log(doc.data());
     return { ...doc.data(), id: doc.id } as PostData;
   });
+};
+
+export const getPaginatedPosts = async (
+  getFromDoc: QueryDocumentSnapshot<DocumentData, DocumentData> | null
+) => {
+  if (getFromDoc) {
+    const next = query(
+      collection(db, "posts"),
+      orderBy("title", "desc"),
+      startAfter(getFromDoc),
+      limit(2)
+    );
+    const querySnapshots = await getDocs(next);
+
+    const last = querySnapshots.docs[querySnapshots.docs.length - 1];
+    const result = querySnapshots.docs.map((doc) => {
+      console.log(doc.data());
+      return { ...doc.data(), id: doc.id } as PostData;
+    });
+    return { result, last };
+  }
+  const first = query(
+    collection(db, "posts"),
+    orderBy("title", "desc"),
+    limit(2)
+  );
+  const querySnapshots = await getDocs(first);
+
+  const last = querySnapshots.docs[querySnapshots.docs.length - 1];
+  const result = querySnapshots.docs.map((doc) => {
+    console.log(doc.data());
+    return { ...doc.data(), id: doc.id } as PostData;
+  });
+  return { result, last };
 };
 
 export const getPostById = async (id: string) => {
@@ -88,7 +127,46 @@ export const getSortedPosts = async (isRising: boolean) => {
         orderBy("title", isRising ? "asc" : "desc")
       )
     );
+    return querySnapshot.docs.map((doc) => {
+      console.log(doc.data());
+      return { ...doc.data(), id: doc.id } as PostData;
+    });
   } catch (error) {
     console.log("Error getting sorted data: ", error);
+    return [];
   }
+};
+
+export const getSearchedPosts = async (searchString: string) => {
+  try {
+    const endString = searchString + "\uf8ff";
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, "posts"),
+        where("title", ">=", searchString),
+        where("title", "<=", endString)
+      )
+    );
+    return querySnapshot.docs.map((doc) => {
+      console.log(doc.data());
+      return { ...doc.data(), id: doc.id } as PostData;
+    });
+  } catch (error) {
+    console.log("Error getting sorted data: ", error);
+    return [];
+  }
+};
+
+export const getLocalSearchedPosts = async (searchString: string) => {
+  const queryResult = await getDocs(collection(db, "posts"));
+  return queryResult.docs
+    .map((doc) => {
+      console.log(doc.data());
+      return { ...doc.data(), id: doc.id } as PostData;
+    })
+    .filter(
+      (post) =>
+        post.title &&
+        post.title.toLowerCase().includes(searchString.toLowerCase())
+    );
 };

@@ -6,9 +6,10 @@ import {
   FlatList,
   Modal,
   RefreshControl,
+  TextInput,
 } from "react-native";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stack } from "expo-router";
 import { getData, getItemWithSetter, storeData } from "@/utils/local_storage";
 import PostForm from "@/components/PostForm";
@@ -19,14 +20,37 @@ import Post from "@/components/Post";
 import Spacer from "@/components/Spacer";
 import { useAuthSession } from "@/providers/authctx";
 import * as postApi from "@/api/postApi";
+import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 
 export default function Index() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpsertUserModalOpen, setIsUpsertUserModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isDescending, setIsDescending] = useState(true);
+  const [searchString, setSearchString] = useState("");
+
   //const [userName, setUserName] = useState<string | null>(null);
   const { userNameSession, signOut } = useAuthSession();
+
+  const lastDocRef = useRef<QueryDocumentSnapshot<
+    DocumentData,
+    DocumentData
+  > | null>(null);
+  // const getSearchedPostsFromBackend = async (searchTerm: string) => {
+  //   setRefreshing(true);
+  //   const posts = await postApi.getLocalSearchedPosts(searchTerm);
+  //   setPosts(posts);
+  //   setRefreshing(false);
+  // };
+
+  // useEffect(() => {
+  //   const delayDebounce = setTimeout(() => {
+  //     console.log(searchString);
+  //     getSearchedPostsFromBackend(searchString);
+  //   }, 800);
+  //   return () => clearTimeout(delayDebounce);
+  // }, [searchString]);
 
   const getPostsFromLocal = async () => {
     const posts = await getData("posts");
@@ -37,10 +61,24 @@ export default function Index() {
 
   const getPostsFromBackend = async () => {
     setRefreshing(true);
-    const posts = await postApi.getAllPosts();
-    setPosts(posts);
+    const { result: newPosts, last: lastDoc } = await postApi.getPaginatedPosts(
+      lastDocRef.current
+    );
+    lastDocRef.current = lastDoc;
+    setPosts([...posts, ...newPosts]);
     setRefreshing(false);
   };
+
+  // const getSortedPostsFromBakcend = async (isDesc: boolean) => {
+  //   setRefreshing(true);
+  //   const posts = await postApi.getSortedPosts(isDesc);
+  //   setPosts(posts);
+  //   setRefreshing(false);
+  // };
+
+  // useEffect(() => {
+  //   getSortedPostsFromBakcend(isDescending);
+  // }, [isDescending]);
 
   useEffect(() => {
     // getItemWithSetter("user", setUserName);
@@ -64,10 +102,10 @@ export default function Index() {
             <Pressable
               style={{ paddingLeft: 6 }}
               onPress={async () => {
-                signOut();
+                setIsDescending(!isDescending);
               }}
             >
-              <Text>{userNameSession}</Text>
+              <Text>{isDescending ? "A-Å" : "Å-A"}</Text>
             </Pressable>
           ),
         }}
@@ -91,6 +129,24 @@ export default function Index() {
           closeModal={() => setIsModalOpen(false)}
         />
       </Modal>
+      <View
+        style={{
+          width: "100%",
+          paddingHorizontal: 20,
+        }}
+      >
+        <TextInput
+          style={{
+            borderWidth: 1,
+            padding: 10,
+            marginTop: 2,
+            borderRadius: 5,
+            width: "100%",
+          }}
+          value={searchString}
+          onChangeText={(text) => setSearchString(text)}
+        />
+      </View>
       <FlatList
         style={{
           width: "100%",
