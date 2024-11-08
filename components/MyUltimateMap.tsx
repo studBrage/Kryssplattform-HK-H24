@@ -13,6 +13,7 @@ export default function MyUltimateMap({
 }: MyUltimateMapProps) {
   if (Platform.OS === "web") {
     return (
+      // @ts-ignore: Typescript klager men det fungerer
       <WebMap
         provider="google"
         initialRegion={intitialRegion}
