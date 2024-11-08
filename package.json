@@ -18,6 +18,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^6.0.2",
+    "@teovilla/react-native-web-maps": "^0.9.5",
     "expo": "~51.0.38",
     "expo-camera": "~15.0.16",
     "expo-constants": "~16.0.2",
