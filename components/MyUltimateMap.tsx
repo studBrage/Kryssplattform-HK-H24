@@ -16,7 +16,7 @@ export default function MyUltimateMap({
       <WebMap
         provider="google"
         initialRegion={intitialRegion}
-        googleMapsApiKey="AIzaSyC413nE4IYZbJiBwXv7uTKcV24r33Z_E34"
+        googleMapsApiKey="Din nøkkel her"
         style={{
           width: "100%",
           height: "100%",
