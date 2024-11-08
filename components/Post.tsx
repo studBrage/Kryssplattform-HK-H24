@@ -29,7 +29,13 @@ export default function Post({ postData, toggleLike }: PostProps) {
     >
       <Pressable>
         <View style={styles.postContainer}>
-          <Image style={styles.postImage} source={{ uri: postData.imageURL }} />
+          <Image
+            accessible={true}
+            accessibilityLabel="Post image, navigate to post details"
+            accessibilityRole="link"
+            style={styles.postImage}
+            source={{ uri: postData.imageURL }}
+          />
           <View style={styles.textContainer}>
             <View style={styles.titleContainer}>
               <Text style={styles.postTitle}>{postData.title}</Text>
@@ -40,8 +46,15 @@ export default function Post({ postData, toggleLike }: PostProps) {
                   gap: 4,
                 }}
               >
-                <Text>{numLikes}</Text>
+                <Text
+                  accessible={true}
+                  accessibilityLabel={`Number of likes is ${numLikes}`}
+                >
+                  {numLikes}
+                </Text>
                 <Pressable
+                  accessible={true}
+                  accessibilityLabel="Like or unlike post"
                   onPress={async () => {
                     if (isLiked) {
                       setNumLikes(numLikes - 1);

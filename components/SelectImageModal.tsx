@@ -71,15 +71,15 @@ export default function SelectImageModal({
             <Text style={styles.text}>Velg bilde</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Take picture"
             style={styles.button}
             onPress={() => captureImage()}
           >
             <Text style={styles.text}>Snap!</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => closeModal()}
-          >
+          <TouchableOpacity style={styles.button} onPress={() => closeModal()}>
             <Text style={styles.text}>Avbryt</Text>
           </TouchableOpacity>
         </View>

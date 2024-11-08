@@ -17,6 +17,8 @@ const TabsLayout = () => {
           headerTitle(props) {
             return (
               <Text
+                accessible={true}
+                accessibilityRole="tab"
                 style={{
                   fontSize: 20,
                   fontWeight: "bold",
@@ -40,6 +42,8 @@ const TabsLayout = () => {
           headerTitle(props) {
             return (
               <Text
+                accessible={true}
+                accessibilityRole="tab"
                 style={{
                   fontSize: 20,
                   fontWeight: "bold",
@@ -63,6 +67,8 @@ const TabsLayout = () => {
           headerTitle(props) {
             return (
               <Text
+                accessible={true}
+                accessibilityRole="tab"
                 style={{
                   fontSize: 20,
                   fontWeight: "bold",

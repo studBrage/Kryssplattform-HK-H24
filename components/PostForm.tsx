@@ -89,6 +89,9 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
             />
           </Modal>
           <Pressable
+            accessible={true}
+            accessibilityLabel="Add image to post"
+            accessibilityHint="Pick an image from the library or take a new picture"
             onPress={() => setIsCameraOpen(true)}
             style={styles.addImageBox}
           >
@@ -103,7 +106,11 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
             )}
           </Pressable>
           <Text>{`${location?.street} ${location?.streetNumber} - ${location?.city}, ${location?.country}`}</Text>
-          <View style={styles.textFieldContainer}>
+          <View
+            accessible={true}
+            accessibilityLabel="Write post title"
+            style={styles.textFieldContainer}
+          >
             <Text style={styles.text}>Tittel</Text>
             <TextInput
               onChangeText={setTitleText}
@@ -112,7 +119,11 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
               placeholder="Skriv inn tittel"
             />
           </View>
-          <View style={styles.textFieldContainer}>
+          <View
+            style={styles.textFieldContainer}
+            accessible={true}
+            accessibilityLabel="Write post description"
+          >
             <Text style={styles.text}>Beskrivelse</Text>
             <TextInput
               multiline
@@ -123,7 +134,11 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
               placeholder="Skriv inn beskrivelse"
             />
           </View>
-          <View style={styles.textFieldContainer}>
+          <View
+            accessible={true}
+            accessibilityLabel="Write post hashtags"
+            style={styles.textFieldContainer}
+          >
             <Text style={styles.text}>Hashtags</Text>
             <TextInput
               onChangeText={setHashtagText}
@@ -134,6 +149,8 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
           </View>
           <View style={styles.buttonContainer}>
             <Pressable
+              accessible={true}
+              accessibilityLabel="Create post and close modal"
               style={styles.primaryButton}
               onPress={async () => {
                 const newPost: PostData = {
@@ -160,6 +177,8 @@ export default function PostForm({ addNewPost, closeModal }: PostFormProps) {
               <Text style={{ color: "white" }}>Legg til post</Text>
             </Pressable>
             <Pressable
+              accessible={true}
+              accessibilityLabel="Cancel and close modal"
               style={styles.secondaryButton}
               onPress={() => closeModal()}
             >
