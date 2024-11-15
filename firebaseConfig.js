@@ -5,8 +5,13 @@ import { initializeApp } from "firebase/app";
 import firebaseConfig from "./firebaseEnv.js";
 import { getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import {
+  initializeAuth,
+  getReactNativePersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
@@ -14,7 +19,10 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 const app = initializeApp(firebaseConfig);
 
 export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  persistence:
+    Platform.OS === "web"
+      ? browserLocalPersistence
+      : getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
 GoogleSignin.configure({
