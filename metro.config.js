@@ -10,7 +10,7 @@ const ALIASES = {
 const config = getDefaultConfig(__dirname, { isCSSEnabled: true });
 config.resolver.sourceExts.push("cjs")
 
-defaultConfig.resolver.resolveRequest = (context, moduleName, platform) => {
+config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (platform === 'web') {
     // The alias will only be used when bundling for the web.
     return context.resolveRequest(context, ALIASES[moduleName] ?? moduleName, platform);

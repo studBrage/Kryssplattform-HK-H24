@@ -1,6 +1,9 @@
 import { auth } from "@/firebaseConfig";
+import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithCredential,
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
@@ -13,6 +16,24 @@ export const signIn = async (email: string, password: string) => {
     .catch((error) => {
       console.log("Oops, kunne ikke logge inn", error);
     });
+};
+
+export const signInWithGoogle = async () => {
+  try {
+    await GoogleSignin.hasPlayServices();
+    const response = await GoogleSignin.signIn();
+    if (isSuccessResponse(response)) {
+      const user = GoogleSignin.getCurrentUser();
+      if (user) {
+        const googleCredential = GoogleAuthProvider.credential(user.idToken);
+        const userCrednetial = await signInWithCredential(auth, googleCredential);
+        console.log("User signed in with google", userCrednetial.user.email)
+        console.log("User signed in with google", userCrednetial.user.displayName)
+      }
+    }
+  } catch (error) {
+    console.log("Error signing in with google", error);
+  }
 };
 
 export const signOut = async () => {

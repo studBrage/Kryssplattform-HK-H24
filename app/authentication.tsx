@@ -90,6 +90,20 @@ const Authentication = () => {
               {isSignUp ? "Lag bruker" : "Logg inn"}
             </Text>
           </Pressable>
+          <Pressable
+            style={styles.primaryButton}
+            onPress={async () => {
+              await authApi.signInWithGoogle();
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+              }}
+            >
+              Logg inn med google
+            </Text>
+          </Pressable>
           {isSignUp && (
             <Pressable
               style={styles.secondaryButton}
